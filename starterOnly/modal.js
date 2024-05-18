@@ -9,8 +9,15 @@ function editNav() {
 
 // DOM Elements
 const modalbg = document.querySelector('.bground');
+const inputs = document.querySelectorAll('input');
 const modalBtn = document.querySelectorAll('.modal-btn');
-const formData = document.querySelectorAll('.formData');
+const firstname = document.getElementById('first');
+const lastname = document.getElementById('last');
+const email = document.getElementById('email');
+const birthdate = document.getElementById('birthdate');
+const quantity = document.getElementById('quantity');
+const cities = document.querySelectorAll("input[name='location']");
+const conditions = document.getElementById('checkbox1');
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener('click', launchModal));
@@ -22,56 +29,55 @@ function launchModal() {
 
 // close modal
 const closeM = document.querySelector('.close');
+closeM.addEventListener('click', closeModal);
 
-function closeModal(close) {
-	close.addEventListener('click', () => {
-		modalbg.style.display = 'none';
+function closeModal() {
+	modalbg.style.display = 'none';
+	inputs.forEach((input) => {
+		hideErrorMessage(input);
 	});
 }
 
-closeModal(closeM);
-
 //  Modal form
 
-// Validation for the first name
-function validateFirstname(firstname) {
-	if (firstname.value.length < 2) {
-		throw new Error(
-			'Veuillez entrer 2 caractères ou plus pour le champ du prénom.',
-		);
-	}
-	return true;
+// Function to display an error message
+function displayErrorMessage(element, message) {
+	element.parentElement.setAttribute('data-error-visible', 'true');
+	element.parentElement.setAttribute('data-error', message);
 }
 
-// Validation for the last name
-function validateLastname(lastname) {
-	if (lastname.value.length < 2) {
-		throw new Error(
-			'Veuillez entrer 2 caractères ou plus pour le champ du nom.',
-		);
+// Function to hide an error message
+function hideErrorMessage(element) {
+	element.parentElement.removeAttribute('data-error-visible');
+	element.parentElement.removeAttribute('data-error');
+}
+
+// Validation for the first name and the last name
+function validateFirstLast(firstLast, errorMessage) {
+	if (firstLast.value < 2) {
+		displayErrorMessage(firstLast, errorMessage);
+		return false;
 	}
+
+	hideErrorMessage(firstLast);
 	return true;
 }
 
 // Validation for the email
 function validateEmail(email) {
-	let emailRegExp = new RegExp(
-		'^[a-z0-9._-]+@[a-z0-9._-]+\\.[a-z0-9]+',
+	const emailRegExp = new RegExp(
+		'^[a-zA-Z0-9._-]{2,64}@[a-zA-Z0-9.-]{2,252}\\.[a-z]{2,4}$',
 	);
 	if (!emailRegExp.test(email.value)) {
-		throw new Error("L'email n'est pas valide.");
-	}
-	return true;
-}
-
-// Validation for the birthdate
-function validateBirthdate(birthdate) {
-	const userAge = calculateUserAge(birthdate);
-	if (userAge < 18 || userAge > 99 || birthdate.value === '') {
-		throw new Error(
-			'Vous devez avoir plus de 18 ans et moins de 99 ans pour participer.',
+		displayErrorMessage(
+			email,
+			'Veuillez renseigner une adresse mail valide.',
 		);
+
+		return false;
 	}
+
+	hideErrorMessage(email);
 	return true;
 }
 
@@ -87,7 +93,24 @@ function calculateUserAge(birthdate) {
 	) {
 		age--;
 	}
+
 	return age;
+}
+
+// Validation for the birthdate
+function validateBirthdate(birthdate) {
+	const userAge = calculateUserAge(birthdate);
+	if (userAge < 18 || userAge > 99 || birthdate.value === '') {
+		displayErrorMessage(
+			birthdate,
+			'Vous devez avoir entre 18 et 99 ans pour participer',
+		);
+
+		return false;
+	}
+
+	hideErrorMessage(birthdate);
+	return true;
 }
 
 // Validation for the quantity
@@ -97,58 +120,61 @@ function validateQuantity(quantity) {
 		quantity.value > 99 ||
 		quantity.value === ''
 	) {
-		throw new Error(
+		displayErrorMessage(
+			quantity,
 			'Veuillez renseigner un nombre entre 0 et 99',
 		);
-	}
-	return true;
-}
 
-// Validation for the terms of use
-function validateConditions(conditions) {
-	if (!conditions.checked) {
-		throw new Error(
-			"Vous devez accepter les conditions d'utilisation",
-		);
+		return false;
 	}
+
+	hideErrorMessage(quantity);
 	return true;
 }
 
 // Validation for the selected city
 function validateCitySelected(cities) {
-	let isChecked = false;
 	for (let i = 0; i < cities.length; i++) {
 		if (cities[i].checked) {
-			isChecked = true;
-			break;
+			hideErrorMessage(cities[0]);
+			return true;
 		}
 	}
 
-	if (!isChecked) {
-		throw new Error('Veuillez sélectionner une ville.');
+	displayErrorMessage(cities[0], 'Veuillez sélectionner une ville');
+	return false;
+}
+
+// Validation for the terms of use
+function validateConditions(conditions) {
+	if (!conditions.checked) {
+		displayErrorMessage(
+			conditions,
+			"Vous devez accepter les conditions d'utilisation",
+		);
+
+		return false;
 	}
+
+	hideErrorMessage(conditions);
 	return true;
 }
 
 // Validate the form
 function validateForm() {
-	const firstname = document.getElementById('first');
-	const lastname = document.getElementById('last');
-	const email = document.getElementById('email');
-	const birthdate = document.getElementById('birthdate');
-	const quantity = document.getElementById('quantity');
-	const conditions = document.getElementById('checkbox1');
-	const cities = document.querySelectorAll(
-		"input[name='location']",
+	const isFirstNameValid = validateFirstLast(
+		firstname,
+		'Veuillez entrer 2 caractères ou plus pour le champ du prénom.',
 	);
-
-	const isFirstNameValid = validateFirstname(firstname);
-	const isLastNameValid = validateLastname(lastname);
+	const isLastNameValid = validateFirstLast(
+		lastname,
+		'Veuillez entrer 2 caractères ou plus pour le champ du nom.',
+	);
 	const isEmailValid = validateEmail(email);
 	const isBirthdateValid = validateBirthdate(birthdate);
 	const isQuantityValid = validateQuantity(quantity);
-	const isConditionsValid = validateConditions(conditions);
 	const isCitySelected = validateCitySelected(cities);
+	const isConditionsValid = validateConditions(conditions);
 
 	return (
 		isFirstNameValid &&
@@ -156,16 +182,46 @@ function validateForm() {
 		isEmailValid &&
 		isBirthdateValid &&
 		isQuantityValid &&
-		isConditionsValid &&
-		isCitySelected
+		isCitySelected &&
+		isConditionsValid
 	);
 }
 
-// Validate the form on submission
-const form = document.querySelector('form[name="reserve"]');
-form.addEventListener('submit', (e) => {
-	e.preventDefault();
-	if (validateForm()) {
-		form.submit();
-	}
-});
+function showSuccessModal() {
+	const main = document.querySelector('main');
+	const container = document.createElement('div');
+	container.classList.add('bground');
+	container.style.display = 'flex';
+	main.appendChild(container);
+	container.innerHTML = `
+		<div class="content content-two">
+			<span class="close close-btn"></span>
+			<div class="modal-body">
+				<h2>Merci pour<br> votre inscription</h2>
+				<button class="btn-submit modal-btn close-btn">Fermer</button>
+			</div>
+		</div>
+    `;
+
+	const closeBtns = container.querySelectorAll('.close-btn');
+	closeBtns.forEach((closeBtn) => {
+		closeBtn.addEventListener('click', () => {
+			container.remove();
+		});
+	});
+}
+
+function validate() {
+	const form = document.querySelector('form[name="reserve"]');
+	form.onsubmit = (e) => {
+		e.preventDefault();
+
+		if (validateForm()) {
+			showSuccessModal();
+			modalbg.style.display = 'none';
+			form.reset();
+		}
+
+		return false;
+	};
+}
