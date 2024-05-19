@@ -8,9 +8,10 @@ function editNav() {
 }
 
 // DOM Elements
-const modalbg = document.querySelector('.bground');
-const inputs = document.querySelectorAll('input');
 const modalBtn = document.querySelectorAll('.modal-btn');
+const modalbg = document.querySelector('.bground');
+const form = document.querySelector('form[name="reserve"]');
+const inputs = document.querySelectorAll('input');
 const firstname = document.getElementById('first');
 const lastname = document.getElementById('last');
 const email = document.getElementById('email');
@@ -54,7 +55,7 @@ function hideErrorMessage(element) {
 
 // Validation for the first name and the last name
 function validateFirstLast(firstLast, errorMessage) {
-	if (firstLast.value < 2) {
+	if (firstLast.value.length < 2) {
 		displayErrorMessage(firstLast, errorMessage);
 		return false;
 	}
@@ -211,17 +212,18 @@ function showSuccessModal() {
 	});
 }
 
-function validate() {
-	const form = document.querySelector('form[name="reserve"]');
-	form.onsubmit = (e) => {
-		e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+	form.onsubmit = validate;
+});
 
-		if (validateForm()) {
-			showSuccessModal();
-			modalbg.style.display = 'none';
-			form.reset();
-		}
+function validate(e) {
+	e.preventDefault();
 
-		return false;
-	};
+	if (validateForm()) {
+		showSuccessModal();
+		modalbg.style.display = 'none';
+		form.reset();
+	}
+
+	return false;
 }
