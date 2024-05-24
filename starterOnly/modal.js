@@ -1,13 +1,5 @@
-function editNav() {
-	const x = document.getElementById('myTopnav');
-	if (x.className === 'topnav') {
-		x.className += ' responsive';
-	} else {
-		x.className = 'topnav';
-	}
-}
-
 // DOM Elements
+const main = document.querySelector('main');
 const modalBtn = document.querySelectorAll('.modal-btn');
 const modalbg = document.querySelector('.bground');
 const form = document.querySelector('form[name="reserve"]');
@@ -20,18 +12,25 @@ const quantity = document.getElementById('quantity');
 const cities = document.querySelectorAll("input[name='location']");
 const conditions = document.getElementById('checkbox1');
 
-// launch modal event
-modalBtn.forEach((btn) => btn.addEventListener('click', launchModal));
+// Burger
+function editNav() {
+	const x = document.getElementById('myTopnav');
+	if (x.className === 'topnav') {
+		x.className += ' responsive';
+	} else {
+		x.className = 'topnav';
+	}
+}
 
-// launch modal form
+// Launch modal form
 function launchModal() {
 	modalbg.style.display = 'flex';
 }
 
-// close modal
-const closeM = document.querySelector('.close');
-closeM.addEventListener('click', closeModal);
+// Launch modal event
+modalBtn.forEach((btn) => btn.addEventListener('click', launchModal));
 
+// Close modal form
 function closeModal() {
 	modalbg.style.display = 'none';
 	inputs.forEach((input) => {
@@ -39,7 +38,11 @@ function closeModal() {
 	});
 }
 
-//  Modal form
+// Close modal event
+const closeM = document.querySelector('.close');
+closeM.addEventListener('click', closeModal);
+
+// Modal form
 
 // Function to display an error message
 function displayErrorMessage(element, message) {
@@ -161,7 +164,7 @@ function validateConditions(conditions) {
 	return true;
 }
 
-// Validate the form
+// Validation of the form
 function validateForm() {
 	const isFirstNameValid = validateFirstLast(
 		firstname,
@@ -188,14 +191,14 @@ function validateForm() {
 	);
 }
 
+// Display and close success modal
 function showSuccessModal() {
-	const main = document.querySelector('main');
 	const container = document.createElement('div');
 	container.classList.add('bground');
 	container.style.display = 'flex';
 	main.appendChild(container);
 	container.innerHTML = `
-		<div class="content content-two">
+		<div class="content content-success">
 			<span class="close close-btn"></span>
 			<div class="modal-body">
 				<h2>Merci pour<br> votre inscription</h2>
@@ -212,10 +215,12 @@ function showSuccessModal() {
 	});
 }
 
+// Loading the full DOM before attaching the onsubmit event to the form
 document.addEventListener('DOMContentLoaded', () => {
 	form.onsubmit = validate;
 });
 
+// Form submission validation and handling
 function validate(e) {
 	e.preventDefault();
 
