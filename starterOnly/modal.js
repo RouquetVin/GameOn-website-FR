@@ -58,7 +58,7 @@ function hideErrorMessage(element) {
 
 // Validation for the first name and the last name
 function validateFirstLast(firstLast, errorMessage) {
-	if (firstLast.value.length < 2) {
+	if (firstLast.value.trim().length < 2) {
 		displayErrorMessage(firstLast, errorMessage);
 		return false;
 	}
@@ -69,10 +69,11 @@ function validateFirstLast(firstLast, errorMessage) {
 
 // Validation for the email
 function validateEmail(email) {
+	const emailValue = email.value.trim();
 	const emailRegExp = new RegExp(
 		'^[a-zA-Z0-9._-]{2,64}@[a-zA-Z0-9.-]{2,252}\\.[a-z]{2,4}$',
 	);
-	if (!emailRegExp.test(email.value)) {
+	if (!emailRegExp.test(emailValue)) {
 		displayErrorMessage(
 			email,
 			'Veuillez renseigner une adresse mail valide.',
@@ -87,7 +88,7 @@ function validateEmail(email) {
 
 // Calculation of the user's age
 function calculateUserAge(birthdate) {
-	const birthDate = new Date(birthdate.value);
+	const birthDate = new Date(birthdate.value.trim());
 	const today = new Date();
 	let age = today.getFullYear() - birthDate.getFullYear();
 	const month = today.getMonth() - birthDate.getMonth();
@@ -119,10 +120,11 @@ function validateBirthdate(birthdate) {
 
 // Validation for the quantity
 function validateQuantity(quantity) {
+	const quantityValue = quantity.value.trim();
 	if (
-		quantity.value < 0 ||
-		quantity.value > 99 ||
-		quantity.value === ''
+		quantityValue < 0 ||
+		quantityValue > 99 ||
+		quantityValue === ''
 	) {
 		displayErrorMessage(
 			quantity,
